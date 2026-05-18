@@ -53,16 +53,9 @@ async function fetchTagsFast() {
             }
           }
           
-          // Also stop if we go too far back in time
+          // Remove year limitation
+          // Keep scraping until we reach a page with no items in our DB
           const timeText = $(el).find('.theme-time').text().trim();
-          let year = 9999;
-          const yearMatch = timeText.match(/年份：(\d{4})/);
-          if (yearMatch) {
-            year = parseInt(yearMatch[1], 10);
-          }
-          if (year < 2020) {
-            keepScraping = false;
-          }
         });
 
         // If a whole page has no anime in our DB (meaning we went past 2020 entirely)

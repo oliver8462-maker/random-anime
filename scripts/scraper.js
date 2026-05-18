@@ -47,27 +47,17 @@ async function scrapeBahamut() {
           year = parseInt(yearMatch[1], 10);
         }
 
-        if (year < 2020) {
-          keepScraping = false;
-          return false; // Break the each loop
-        }
-
-        if (year <= 2026 && year >= 2020) {
-          const numTags = Math.floor(Math.random() * 2) + 2;
-          const shuffledTags = [...ALL_TAGS].sort(() => 0.5 - Math.random());
-          const tags = shuffledTags.slice(0, numTags);
-          
-          if (title && href) {
-            animes.push({
-              id: idCounter++,
-              title,
-              url: href,
-              cover: img,
-              views: info,
-              tags: tags,
-              year: year
-            });
-          }
+        // Remove the 2020 restriction to fetch all animes
+        if (title && href) {
+          animes.push({
+            id: idCounter++,
+            title,
+            url: href,
+            cover: img,
+            views: info,
+            tags: [], // Tags will be populated by fetch-tags-fast.js later
+            year: year
+          });
         }
       });
 
