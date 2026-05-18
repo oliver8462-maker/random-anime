@@ -124,10 +124,24 @@ function handleRandomize() {
 function filterAnimes() {
   if (activeTags.has('全部')) return animeData;
   
-  return animeData.filter(anime => {
-    // If any of the active tags exist in the anime's tags
-    return anime.tags.some(t => activeTags.has(t));
-  });
+  // Calculate match scores for all animes
+  const scoredAnimes = animeData.map(anime => {
+    let score = 0;
+    anime.tags.forEach(t => {
+      if (activeTags.has(t)) score++;
+    });
+    return { anime, score };
+  }).filter(item => item.score > 0); // Only keep those with at least 1 match
+  
+  if (scoredAnimes.length === 0) return [];
+  
+  // Find the highest score
+  const maxScore = Math.max(...scoredAnimes.map(item => item.score));
+  
+  // Filter only those with the max score (best match)
+  return scoredAnimes
+    .filter(item => item.score === maxScore)
+    .map(item => item.anime);
 }
 
 function updateResultUI(anime) {
