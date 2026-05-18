@@ -241,7 +241,7 @@ header p {
 .result-card {
   width: 100%;
   max-width: 500px;
-  height: 400px;
+  height: 550px; /* Increased from 400px */
   background-color: transparent;
 }
 
@@ -294,13 +294,15 @@ header p {
 .anime-cover-wrapper {
   position: relative;
   width: 100%;
-  height: 220px;
+  height: 350px; /* Increased from 220px to show more of the poster */
+  background: #000;
 }
 
 #anime-cover {
   width: 100%;
   height: 100%;
-  object-fit: cover;
+  object-fit: contain; /* Changed from cover to contain to prevent blurry zooming and cropping */
+  object-position: center;
 }
 
 .anime-views {
