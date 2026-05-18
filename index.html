@@ -1,13 +1,61 @@
-<!doctype html>
-<html lang="en">
+<!DOCTYPE html>
+<html lang="zh-Hant">
   <head>
     <meta charset="UTF-8" />
-    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>random-anime</title>
+    <title>隨機動畫抽取器 | 拯救選擇障礙</title>
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@400;500;700;900&display=swap" rel="stylesheet">
   </head>
   <body>
-    <div id="app"></div>
+    <div class="bg-shapes">
+      <div class="shape shape-1"></div>
+      <div class="shape shape-2"></div>
+      <div class="shape shape-3"></div>
+    </div>
+    
+    <div id="app" class="glass-container">
+      <header>
+        <h1>🌟 動畫瘋隨機抽取器</h1>
+        <p>拯救選擇障礙，一鍵決定今天要看什麼！</p>
+      </header>
+
+      <section class="filters-section">
+        <h3>選擇你想看的類型：</h3>
+        <div class="tags-container" id="tags-container">
+          <!-- Tags will be injected here by main.js -->
+        </div>
+      </section>
+
+      <div class="action-section">
+        <button id="randomize-btn" class="glow-on-hover">幫我決定！</button>
+      </div>
+
+      <section id="result-section" class="result-section hidden">
+        <div class="result-card">
+          <div class="result-card-inner">
+            <div class="result-card-front">
+              <!-- Placeholder for flipping animation -->
+              <div class="card-placeholder">?</div>
+            </div>
+            <div class="result-card-back">
+              <div class="anime-cover-wrapper">
+                <img id="anime-cover" src="" alt="Anime Cover" />
+                <div id="anime-views" class="anime-views"></div>
+              </div>
+              <div class="anime-info">
+                <h2 id="anime-title" class="anime-title"></h2>
+                <div id="anime-tags" class="anime-tags"></div>
+                <a id="anime-link" href="#" target="_blank" class="watch-btn">▶ 前往巴哈姆特觀看</a>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+    </div>
+
     <script type="module" src="/src/main.js"></script>
   </body>
 </html>
