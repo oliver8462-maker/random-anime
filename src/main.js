@@ -25,11 +25,11 @@ async function init() {
 // Load Scraped Data
 async function loadData() {
   try {
-    const response = await fetch('/data.json');
+    const response = await fetch(`${import.meta.env.BASE_URL}data.json`);
+    if (!response.ok) throw new Error(`HTTP error! status: ${response.status}`);
     animeData = await response.json();
   } catch (err) {
     console.error('Failed to load anime data:', err);
-    animeTitle.textContent = '資料載入失敗，請確認 /data.json 存在';
   }
 }
 
@@ -119,7 +119,10 @@ function setupEventListeners() {
 }
 
 function handleRandomize() {
-  if (animeData.length === 0) return;
+  if (animeData.length === 0) {
+    alert('資料尚未載入完成或載入失敗，請稍後再試。');
+    return;
+  }
 
   // Visual feedback on button
   randomizeBtn.classList.add('loading');
