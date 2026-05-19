@@ -121,7 +121,29 @@ header p {
   font-weight: 500;
 }
 
-.tags-container {
+.filter-category {
+  margin-bottom: 1.5rem;
+}
+
+.category-header {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  margin-bottom: 0.8rem;
+}
+
+.category-title {
+  font-weight: 700;
+  color: var(--text-primary);
+  font-size: 1rem;
+}
+
+.category-counter {
+  font-size: 0.9rem;
+  color: var(--text-secondary);
+}
+
+.category-tags {
   display: flex;
   flex-wrap: wrap;
   gap: 0.5rem;

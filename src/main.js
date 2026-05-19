@@ -79,7 +79,38 @@ function renderFilterCategories() {
 }
 
 function handleTagClick(category, option) {
-  // To be implemented in Task 4
+  const id = category.id;
+  
+  if (category.type === 'multi') {
+    if (option === '全部') {
+      filterState[id].clear();
+      filterState[id].add('全部');
+    } else {
+      if (filterState[id].has('全部')) {
+        filterState[id].delete('全部');
+      }
+      
+      if (filterState[id].has(option)) {
+        filterState[id].delete(option);
+      } else {
+        if (filterState[id].size >= category.limit) {
+          alert(`最多只能選擇 ${category.limit} 個屬性`);
+          return;
+        }
+        filterState[id].add(option);
+      }
+      
+      if (filterState[id].size === 0) {
+        filterState[id].add('全部');
+      }
+    }
+  } else {
+    // Single select
+    filterState[id] = option;
+  }
+  
+  // Re-render UI to update classes and counters
+  renderFilterCategories();
 }
 
 // Main Randomizer Logic
