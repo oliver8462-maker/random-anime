@@ -1,18 +1,11 @@
 import './style.css';
-
-// All tags requested by the user
-const ALL_TAGS = [
-  "全部", "動作", "冒險", "奇幻", "異世界", "魔法", "超能力", "科幻", "機甲", "校園", 
-  "喜劇", "戀愛", "青春", "勵志", "溫馨", "悠閒", "料理", "親情", "感人", 
-  "運動", "競技", "偶像", "音樂", "職場", "推理", "懸疑", "時間穿越", 
-  "歷史", "戰爭", "血腥暴力", "靈異神怪", "黑暗", "特攝", "BL", "GL"
-];
+import { FILTER_CONFIG, createInitialState, filterAnimes } from './filterLogic.js';
 
 let animeData = [];
-let activeTags = new Set(["全部"]);
+let filterState = createInitialState();
 
 // DOM Elements
-const tagsContainer = document.getElementById('tags-container');
+const filterCategoriesContainer = document.getElementById('filter-categories-container');
 const randomizeBtn = document.getElementById('randomize-btn');
 const resultSection = document.getElementById('result-section');
 const resultCard = document.querySelector('.result-card');
@@ -24,21 +17,9 @@ const animeLink = document.getElementById('anime-link');
 
 // Initialize App
 async function init() {
-  renderTags();
+  renderFilterCategories();
   await loadData();
   setupEventListeners();
-}
-
-// Render Tag Buttons
-function renderTags() {
-  ALL_TAGS.forEach(tag => {
-    const el = document.createElement('div');
-    el.className = 'filter-tag';
-    if (tag === '全部') el.classList.add('active');
-    el.textContent = tag;
-    el.addEventListener('click', () => toggleTag(tag, el));
-    tagsContainer.appendChild(el);
-  });
 }
 
 // Load Scraped Data
@@ -52,35 +33,53 @@ async function loadData() {
   }
 }
 
-// Toggle Tags Logic
-function toggleTag(tag, el) {
-  if (tag === '全部') {
-    activeTags.clear();
-    activeTags.add('全部');
-    document.querySelectorAll('.filter-tag').forEach(t => t.classList.remove('active'));
-    el.classList.add('active');
-    return;
-  }
+// Render Tag Buttons
+function renderFilterCategories() {
+  filterCategoriesContainer.innerHTML = '';
+  
+  FILTER_CONFIG.forEach(category => {
+    const catEl = document.createElement('div');
+    catEl.className = 'filter-category';
+    
+    let counterHtml = '';
+    if (category.type === 'multi') {
+      const currentCount = filterState[category.id].has('全部') ? 0 : filterState[category.id].size;
+      counterHtml = `<span class="category-counter" id="counter-${category.id}">(${currentCount}/${category.limit})</span>`;
+    }
 
-  // Remove '全部' if another tag is clicked
-  if (activeTags.has('全部')) {
-    activeTags.delete('全部');
-    document.querySelector('.filter-tag:first-child').classList.remove('active');
-  }
+    const header = document.createElement('div');
+    header.className = 'category-header';
+    header.innerHTML = `<span class="category-title">${category.label}</span>${counterHtml}`;
+    
+    const tagsContainer = document.createElement('div');
+    tagsContainer.className = 'category-tags';
+    
+    category.options.forEach(option => {
+      const btn = document.createElement('button');
+      btn.className = 'filter-tag';
+      btn.dataset.category = category.id;
+      btn.dataset.tag = option;
+      btn.textContent = option;
+      
+      // Check active state
+      if (category.type === 'multi') {
+        if (filterState[category.id].has(option)) btn.classList.add('active');
+      } else {
+        if (filterState[category.id] === option) btn.classList.add('active');
+      }
+      
+      btn.addEventListener('click', () => handleTagClick(category, option));
+      tagsContainer.appendChild(btn);
+    });
+    
+    catEl.appendChild(header);
+    catEl.appendChild(tagsContainer);
+    filterCategoriesContainer.appendChild(catEl);
+  });
+}
 
-  if (activeTags.has(tag)) {
-    activeTags.delete(tag);
-    el.classList.remove('active');
-  } else {
-    activeTags.add(tag);
-    el.classList.add('active');
-  }
-
-  // If no tags selected, fallback to '全部'
-  if (activeTags.size === 0) {
-    activeTags.add('全部');
-    document.querySelector('.filter-tag:first-child').classList.add('active');
-  }
+function handleTagClick(category, option) {
+  // To be implemented in Task 4
 }
 
 // Main Randomizer Logic
@@ -99,7 +98,7 @@ function handleRandomize() {
   resultCard.classList.remove('flipped');
 
   setTimeout(() => {
-    const filtered = filterAnimes();
+    const filtered = filterAnimes(animeData, filterState);
     
     if (filtered.length === 0) {
       alert('找不到符合標籤的動畫，請嘗試減少標籤！');
@@ -121,28 +120,7 @@ function handleRandomize() {
   }, 1000); // 1s delay for anticipation
 }
 
-function filterAnimes() {
-  if (activeTags.has('全部')) return animeData;
-  
-  // Calculate match scores for all animes
-  const scoredAnimes = animeData.map(anime => {
-    let score = 0;
-    anime.tags.forEach(t => {
-      if (activeTags.has(t)) score++;
-    });
-    return { anime, score };
-  }).filter(item => item.score > 0); // Only keep those with at least 1 match
-  
-  if (scoredAnimes.length === 0) return [];
-  
-  // Find the highest score
-  const maxScore = Math.max(...scoredAnimes.map(item => item.score));
-  
-  // Filter only those with the max score (best match)
-  return scoredAnimes
-    .filter(item => item.score === maxScore)
-    .map(item => item.anime);
-}
+
 
 function updateResultUI(anime) {
   // If no cover, use a placeholder
