@@ -13,20 +13,38 @@ export function createInitialState() {
 }
 
 export function filterAnimes(animes, state) {
-  return animes.filter(anime => {
-    // Check Type
+  // Check strict categories first
+  const strictFiltered = animes.filter(anime => {
     if (state.type !== '全部' && !anime.tags.includes(state.type)) return false;
-    
-    // Check Audience
     if (state.audience !== '全部' && !anime.tags.includes(state.audience)) return false;
-    
-    // Check Attributes (must have all selected attributes)
-    if (!state.attributes.has('全部')) {
-      for (const attr of state.attributes) {
-        if (!anime.tags.includes(attr)) return false;
-      }
-    }
-    
     return true;
   });
+
+  // If no specific attributes selected, return strict matches
+  if (state.attributes.has('全部') || state.attributes.size === 0) {
+    return strictFiltered;
+  }
+
+  // Calculate matching score for each anime
+  const scoredAnimes = strictFiltered.map(anime => {
+    let score = 0;
+    for (const attr of state.attributes) {
+      if (anime.tags.includes(attr)) score++;
+    }
+    return { anime, score };
+  });
+
+  // Find the maximum score achieved
+  let maxScore = 0;
+  for (const item of scoredAnimes) {
+    if (item.score > maxScore) {
+      maxScore = item.score;
+    }
+  }
+
+  // If no anime matches any of the attributes, return empty
+  if (maxScore === 0) return [];
+
+  // Return animes that achieved the maximum score (fallback logic)
+  return scoredAnimes.filter(item => item.score === maxScore).map(item => item.anime);
 }

@@ -41,3 +41,24 @@ test('Filters correctly when attributes use multi-select (strict AND)', () => {
   expect(result.length).toBe(1);
   expect(result[0].title).toBe('A');
 });
+
+test('Fallback logic: maximizes tags when perfect match is not found', () => {
+  const animes = [
+    { title: 'A', tags: ['動作', '科幻', 'OVA', '闔家觀賞'] },
+    { title: 'B', tags: ['動作', '奇幻', '戀愛', 'OVA', '闔家觀賞'] }
+  ];
+  
+  const state = {
+    attributes: new Set(['動作', '奇幻', '推理']),
+    type: 'OVA',
+    audience: '闔家觀賞'
+  };
+  
+  // Anime A has 1 matching attribute (動作). Score = 1
+  // Anime B has 2 matching attributes (動作, 奇幻). Score = 2
+  // Max score is 2, so Anime B should be returned, despite missing '推理'.
+  
+  const result = filterAnimes(animes, state);
+  expect(result.length).toBe(1);
+  expect(result[0].title).toBe('B');
+});
